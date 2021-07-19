@@ -2,7 +2,7 @@
   "name": "my-blog-api",
   "version": "1.0.0",
   "engines": {
-    "node": "12.18.4"
+    "node": "^14.16.0"
   },
   "description": "Blog for coding/tech related subjects.",
   "main": "app.js",
