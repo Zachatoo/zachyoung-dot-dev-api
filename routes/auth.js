@@ -1,29 +1,29 @@
 import { Router } from 'express';
-const router = Router();
 import jsonwebtoken from 'jsonwebtoken';
 import passport from 'passport';
+import { BadRequestError } from '../utils';
 
-router.post('/token', (req, res) => {
+const router = Router();
+
+router.post('/token', (req, res, next) => {
   passport.authenticate('local', { session: false }, (err, user, info) => {
     if (err || !user) {
-      return res.status(400).json({
-        message: info,
-        user,
-      });
+      return next(new BadRequestError(info));
     }
 
     req.logIn(user, { session: false }, err => {
       if (err) {
-        res.send(err);
+        return next(new Error(err));
       }
 
-      jsonwebtoken.sign(user, process.env.JWT_SECRET, { expiresIn: '30s' }, (err, token) => {
-        res.json({ token, err, user });
+      jsonwebtoken.sign({ userID: user._id }, process.env.JWT_SECRET, { expiresIn: '3h' }, (err, accessToken) => {
+        if (err) {
+          return next(new Error(err));
+        }
+        res.json({ accessToken });
       });
-      // const token = jsonwebtoken.sign(user, process.env.JWT_SECRET);
-      // res.json({ user, token })
     });
-  })(req, res);
+  })(req, res, next);
 });
 
 export default router;

@@ -1,20 +1,19 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
-const Schema = mongoose.Schema;
+const { Schema, model } = mongoose;
 
 const PostSchema = new Schema({
-  title: { type: String, required: true, minLength: 3, maxLength: 128 },
-  content: { type: String, required: true, minLength: 32 },
+  title: { type: String, required: true, minLength: 1, maxLength: 128 },
+  content: { type: String, required: true },
+  published: { type: Boolean, required: true, default: false },
   publishedAt: Date,
   author: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-});
-
-PostSchema.virtual('published').get(function() {
-  return this.publishedAt !== undefined;
-});
+}, { timestamps: true });
 
 // PostSchema.virtual('publishedAtFormatted').get(function() {
 //   return new Intl.DateTimeFormat([], { dateStyle: 'full' }).format(this.publishedAt);
 // });
 
-module.exports = mongoose.model('Post', PostSchema);
+PostSchema.set('toJSON', { virtuals: true });
+
+export const PostModel = model('Post', PostSchema);

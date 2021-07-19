@@ -1,11 +1,11 @@
-import { passportConfig, hash } from './config/passport.js';
 import passport from 'passport';
 import express from 'express';
 import mongoose from 'mongoose';
-import auth from './routes/auth.js';
-import { UserModel } from './models/user.js';
+import { passportConfig } from './config/passport.js';
+import { auth, comments, posts } from './routes';
+import { getPagination, NotFoundError } from './utils';
 
-mongoose.connect(process.env.DB_URL, { useUnifiedTopology: true, useNewUrlParser: true });
+mongoose.connect(process.env.DB_URL, { useUnifiedTopology: true, useNewUrlParser: true, useFindAndModify: false });
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "mongo connection error"));
 
@@ -20,24 +20,25 @@ app.use(
 app.use(express.json());
 app.use(passport.initialize());
 passportConfig();
+app.use(getPagination);
 
-// Routes
+// unprotected routes
 app.use('/auth', auth);
 
-app.post('/init', (req, res) => {
-  res.send('No longer in use');
-  const { email, password } = req.body;
+// semi-protected routes
+app.use('/comments', comments);
+app.use('/posts', posts);
 
-  hash(password, 10).then(hashedPassword => {
-    UserModel.create({ email, password: hashedPassword }, (err, message) => {
-      if (err) {
-        res.send(err);
-      }
-      res.send(message);
-    })
-  }).catch(err => {
-    console.log(err);
-  });
+// catch routes that don't exist
+app.all('*', (req, res, next) => {
+  next(new NotFoundError('Endpoint not found'));
+});
+
+// error handler
+app.use((err, req, res, next) => {
+  if (err) {
+    return res.status(err.status || 500).json({ message: err.message });
+  }
 });
 
 app.listen(5000, () => console.log('Server started on port 5000'));

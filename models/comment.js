@@ -1,11 +1,10 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
-const Schema = mongoose.Schema;
+const { Schema, model } = mongoose;
 
 const CommentSchema = new Schema({
   message: { type: String, required: true, minLength: 3 },
-  publishedAt: { type: Date, required: true, default: new Date() },
   author: { type: String, required: true, minLength: 1 },
 }, { timestamps: true });
 
-module.exports = mongoose.model('Comment', CommentSchema);
+export const CommentModel = model('Comment', CommentSchema);
