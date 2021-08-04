@@ -1,7 +1,8 @@
 import passport from 'passport';
 import express from 'express';
 import mongoose from 'mongoose';
-import { passportConfig } from './config/passport.js';
+import cors from 'cors';
+import { passportConfig, corsOptions } from './config';
 import { auth, comments, posts } from './routes';
 import { getPagination, NotFoundError } from './utils';
 
@@ -21,6 +22,9 @@ app.use(express.json());
 app.use(passport.initialize());
 passportConfig();
 app.use(getPagination);
+
+app.use(cors());
+app.options('*', cors(corsOptions));
 
 // unprotected routes
 app.use('/auth', auth);
