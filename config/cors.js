@@ -1,6 +1,7 @@
 const allowList = [
   'http://localhost:3000',
-  'https:/zachyoung.dev',
+  'https://zachyoung.dev',
+  'https://app.netlify.com',
 ];
 
 export const corsOptions = {
