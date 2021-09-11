@@ -23,8 +23,8 @@ app.use(passport.initialize());
 passportConfig();
 app.use(getPagination);
 
-app.use(cors());
-app.options('*', cors(corsOptions));
+app.use(cors(corsOptions));
+app.options('*', cors());
 
 // unprotected routes
 app.use('/auth', auth);

@@ -8,6 +8,17 @@ export class BadRequestError extends Error {
   }
 }
 
+// Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated".
+// That is, the client must authenticate itself to get the requested response.
+export class UnauthorizedError extends Error {
+  constructor(error) {
+    super(error.message);
+
+    this.message = error;
+    this.status = 401;
+  }
+}
+
 // The server can not find the requested resource.
 export class NotFoundError extends Error {
   constructor(error) {
